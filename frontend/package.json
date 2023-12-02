@@ -9,6 +9,7 @@
     "bulma": "^0.9.4",
     "debounce": "^2.0.0",
     "deck.gl": "^8.9.32",
+    "dotenv": "^16.3.1",
     "mapbox-gl": "^3.0.0",
     "react": "^18.2.0",
     "react-debounce-input": "^3.3.0",
