@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.scss';
-import debounce from 'debounce';
 import { DebounceInput } from 'react-debounce-input'
 
 import airportData from './airports.json';
