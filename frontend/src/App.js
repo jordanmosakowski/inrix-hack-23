@@ -1,5 +1,5 @@
 import './App.scss';
-import JetStreamMap from './JetStreamMap';
+import Main from './Main';
 import Welcome from './Welcome';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -10,11 +10,10 @@ function App() {
       <Routes>
         <Route path="/">
           <Route index element={<Welcome />} />
-          <Route path="map" element={<JetStreamMap />} />
+          <Route path="map" element={<Main />} />
         </Route>
       </Routes>
     </BrowserRouter>
-      {/* <JetStreamMap /> */}
     </div>
   )
 }

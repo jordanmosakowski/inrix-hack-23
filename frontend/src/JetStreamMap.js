@@ -35,7 +35,7 @@ const start_finish_data = [
 ];
 
 
-function App() {
+function JetStreamMap() {
 
   const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
 
@@ -117,7 +117,7 @@ function App() {
   ];
 
   return (
-    <div className="App">
+    <div className="JetStreamMap">
       <DeckGL
         viewState={viewState}
         onViewStateChange={({ viewState }) => setViewState(viewState)}
@@ -134,4 +134,4 @@ function App() {
   );
 }
 
-export default App;
+export default JetStreamMap;
