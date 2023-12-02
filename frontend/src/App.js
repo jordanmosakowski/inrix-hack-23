@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import './App.css';
+import './App.scss';
 import DeckGL, { GeoJsonLayer } from 'deck.gl';
 import { Map } from 'react-map-gl';
+
+import Welcome from './Welcome';
 
 const MAPBOX_ACCESS_TOKEN = "pk.eyJ1IjoiamVzcGVyc29uIiwiYSI6ImNscG9ldXQ0ZDBwbTIya285bW9neGcxZG8ifQ.oN9Tsez9LV9y-vk5oxyryA"
 const MAP_STYLE = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
@@ -35,19 +37,26 @@ function App() {
 
   return (
     <div className="App">
-      <DeckGL
-        viewState={viewState}
-        onViewStateChange={({ viewState }) => setViewState(viewState)}
-        controller={true}
-        layers={layers}
-      >
-        <Map
-          mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
-          mapStyle={MAP_STYLE}
-        />
-      </DeckGL>
+      <Welcome />
     </div>
-  );
+  )
+
+  // return (
+  //   <div className="App">
+  //     <
+  //     <DeckGL
+  //       viewState={viewState}
+  //       onViewStateChange={({ viewState }) => setViewState(viewState)}
+  //       controller={true}
+  //       layers={layers}
+  //     >
+  //       <Map
+  //         mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
+  //         mapStyle={MAP_STYLE}
+  //       />
+  //     </DeckGL>
+  //   </div>
+  // );
 }
 
 export default App;
