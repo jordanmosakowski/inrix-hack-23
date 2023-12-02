@@ -1,4 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Nova+Square&display=swap');
+$primary: #09357a;
+$info: #09357a;
+$input-background-color: #f7f7f7;
+$input-color: #333333;
+$text: #000000;
+$text-strong: #333333;
 
 .App {
   // center divs in the middle of the page
@@ -30,10 +36,6 @@ h4{
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Nova Square', sans-serif;
   color: #09357a;
-}
-
-.App-link {
-  color: #61dafb;
 }
 
 .Welcome {
