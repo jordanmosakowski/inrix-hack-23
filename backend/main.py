@@ -22,10 +22,12 @@ def api_route():
     time = request.args.get('time')
     # This makes the call to the get_token function in the auth_utils.py file
     return get_route(start, end, time)
+
 def api_parking():
     point = request.args.get('point')
     radius = request.args.get('end')
     duration = request.args.get('time')
+    return get_parking(point, radius, duration)
 
 if __name__ == '__main__':
     app.run(debug=False, port=5000)
