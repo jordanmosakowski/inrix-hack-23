@@ -6,6 +6,64 @@ $input-color: #333333;
 $text: #000000;
 $text-strong: #333333;
 
+.JetStreamMap {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.SelectFlightWrapper {
+  padding: 10px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  background-color: rgba($color: #000000, $alpha: 0.4);
+
+}
+
+.SelectFlight {
+  padding: 10px;
+  position: absolute;
+  top: 6vh;
+  left: 6vh;
+  right: 6vh;
+  bottom: 6vh;
+  z-index: 2;
+  background-color: white;
+  border-radius: 15px;
+}
+
+.SelectTransport {
+  padding: 10px;
+  position: absolute;
+  right: 3vh;
+  top: 3vh;
+  bottom: 3vh;
+  border-radius: 10px;
+  width: 30vw;
+  height: 96vh;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.FlightInfoPanel {
+  padding: 10px;
+  position: absolute;
+  left: 3vh;
+  top: 3vh;
+  bottom: 3vh;
+  border-radius: 10px;
+  width: 25vw;
+  height: 300px;
+  background-color: white;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
 .App {
   // center divs in the middle of the page
   display: flex;

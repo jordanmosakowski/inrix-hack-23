@@ -8,9 +8,11 @@ function Welcome() {
     const [startAddr, setStartAddr] = useState("");
     const [startAddrOptions, setStartAddrOptions] = useState([]);
     const [startAddrCoords, setStartAddrCoords] = useState([]);
+    const [startDate, setStartDate] = useState("2024-01-01"); // [year, month, day, hour, minute
     const [endAddr, setEndAddr] = useState("");
     const [endAddrOptions, setEndAddrOptions] = useState([]);
     const [endAddrCoords, setEndAddrCoords] = useState([]);
+    const [endDate, setEndDate] = useState("2024-01-02"); // [year, month, day, hour, minute
 
     const getStart = (address) => {
         fetch('https://nominatim.openstreetmap.org/search?format=json&q='+address)
@@ -23,33 +25,6 @@ function Welcome() {
             .then(response => response.json())
             .then(data => setEndAddrOptions(data));
     }
-
-    useEffect(() => {
-        //find closest airport to start
-        let closestStartAirport = null;
-        let closestStartAirportDistance = null;
-        airportData.features.forEach((airport) => {
-            let distance = Math.sqrt(Math.pow(airport.geometry.coordinates[1] - startAddrCoords[0], 2) + Math.pow(airport.geometry.coordinates[0] - startAddrCoords[1], 2));
-            if (closestStartAirportDistance == null || distance < closestStartAirportDistance) {
-                closestStartAirport = airport;
-                closestStartAirportDistance = distance;
-            }
-        })
-
-        //find closest airport to end
-        let closestEndAirport = null;
-        let closestEndAirportDistance = null;
-        airportData.features.forEach((airport) => {
-            let distance = Math.sqrt(Math.pow(airport.geometry.coordinates[1] - endAddrCoords[0], 2) + Math.pow(airport.geometry.coordinates[0] - endAddrCoords[1], 2));
-            if (closestEndAirportDistance == null || distance < closestEndAirportDistance) {
-                closestEndAirport = airport;
-                closestEndAirportDistance = distance;
-            }
-        })
-
-        console.log("Start:",closestStartAirport.properties.iata_code);
-        console.log("End:",closestEndAirport.properties.iata_code);
-    }, [startAddrCoords, endAddrCoords])
 
     return (
         <div className="Welcome">
@@ -110,6 +85,45 @@ function Welcome() {
                     </div>
                 </div>
             </div>
+            <div>
+                <label className="label"><h3>Start Date</h3></label>
+                <input className="input" type="date" value={startDate} onChange={event => setStartDate(event.target.value)} />
+                <label className="label"><h3>End Date</h3></label>
+                <input className="input" type="date" value={endDate} onChange={event => setEndDate(event.target.value)} />
+            </div>
+            <br/>
+            <br/>
+            {/* Submit button */}
+            <button className="button is-primary" onClick={() => {
+                // make sure startDate is before endDate
+                if (startDate > endDate) {
+                    alert("Start date must be before end date");
+                    return;
+                }
+                let closestStartAirport = null;
+                let closestStartAirportDistance = null;
+                airportData.features.forEach((airport) => {
+                    let distance = Math.sqrt(Math.pow(airport.geometry.coordinates[1] - startAddrCoords[0], 2) + Math.pow(airport.geometry.coordinates[0] - startAddrCoords[1], 2));
+                    if (closestStartAirportDistance == null || distance < closestStartAirportDistance) {
+                        closestStartAirport = airport;
+                        closestStartAirportDistance = distance;
+                    }
+                })
+
+                //find closest airport to end
+                let closestEndAirport = null;
+                let closestEndAirportDistance = null;
+                airportData.features.forEach((airport) => {
+                    let distance = Math.sqrt(Math.pow(airport.geometry.coordinates[1] - endAddrCoords[0], 2) + Math.pow(airport.geometry.coordinates[0] - endAddrCoords[1], 2));
+                    if (closestEndAirportDistance == null || distance < closestEndAirportDistance) {
+                        closestEndAirport = airport;
+                        closestEndAirportDistance = distance;
+                    }
+                })
+
+                console.log("Start:",closestStartAirport.properties.iata_code, startAddrCoords);
+                console.log("End:",closestEndAirport.properties.iata_code, endAddrCoords);
+            }}>Submit</button>
         </div>
     )
 }
