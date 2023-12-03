@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 function Welcome() {
     const navigate = useNavigate();
 
+    const [stage, setStage] = useState(0);
+
     const [startAddr, setStartAddr] = useState("");
     const [startAddrOptions, setStartAddrOptions] = useState([]);
     const [startAddrCoords, setStartAddrCoords] = useState([]);
@@ -31,7 +33,7 @@ function Welcome() {
         <div className="Welcome">
             <h1>Welcome to JetStream</h1>
             <span>Enter a start address to get started</span><br/>
-            <div className={`dropdown ${startAddrOptions.length > 0 ? 'is-active' : ''}`}>
+            <div className={`dropdown anim-box ${stage >= 0 ? "box-show" : ""} ${startAddrOptions.length > 0 ? 'is-active' : ''}`}>
                 <div className="dropdown-trigger">
                     <div className="field">
                         <label className="label"><h3>Start</h3></label>
@@ -53,6 +55,7 @@ function Welcome() {
                                 setStartAddr(addr.display_name); 
                                 setStartAddrOptions([]);
                                 setStartAddrCoords([addr.lat, addr.lon]);
+                                setStage(Math.max(stage,1));
                             }}>{addr.display_name}</a>
                         ))}
                     </div>
@@ -60,7 +63,7 @@ function Welcome() {
             </div>
             <br/>
             <br/>
-            <div className={`dropdown ${endAddrOptions.length > 0 ? 'is-active' : ''}`}>
+            {stage >= 1 && <div className={`dropdown anim-box ${endAddrOptions.length > 0 ? 'is-active' : ''}`}>
                 <div className="dropdown-trigger">
                     <div className="field">
                         <label className="label"><h3>Destination</h3></label>
@@ -81,28 +84,30 @@ function Welcome() {
                                 setEndAddr(addr.display_name); 
                                 setEndAddrOptions([]);
                                 setEndAddrCoords([addr.lat, addr.lon]);
+                                setStage(Math.max(stage,2));
                             }}>{addr.display_name}</a>
                         ))}
                     </div>
                 </div>
-            </div>
-            <div>
+            </div>}
+            {stage >= 2 && <div className={`anim-box ${stage >= 2 ? "box-show" : ""}`}>
                 <label className="label"><h3>Start Date</h3></label>
                 <input className="input" type="date" value={startDate} onChange={event => setStartDate(event.target.value)} />
                 <label className="label"><h3>End Date</h3></label>
                 <input className="input" type="date" value={endDate} onChange={event => setEndDate(event.target.value)} />
-            </div>
+            </div>}
             <br/>
             <br/>
-            {/* Submit button */}
-            <button className="button is-primary" onClick={() => {
-                // make sure startDate is before endDate
-                if (startDate > endDate) {
-                    alert("Start date must be before end date");
-                    return;
-                }
-                navigate(`/map?origin=${startAddrCoords[0]},${startAddrCoords[1]}&destination=${endAddrCoords[0]},${endAddrCoords[1]}&startDate=${startDate}&endDate=${endDate}`);
-            }}>Submit</button>
+            {stage >= 2 && <div className={`anim-box ${stage >= 2 ? "box-show" : ""}`}>
+                <button className="button is-primary" onClick={() => {
+                    // make sure startDate is before endDate
+                    if (startDate > endDate) {
+                        alert("Start date must be before end date");
+                        return;
+                    }
+                    navigate(`/map?origin=${startAddrCoords[0]},${startAddrCoords[1]}&destination=${endAddrCoords[0]},${endAddrCoords[1]}&startDate=${startDate}&endDate=${endDate}`);
+                }}>Submit</button>
+            </div>}
         </div>
     )
 }
