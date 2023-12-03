@@ -43,9 +43,8 @@ def get_route(start, end, time):
 
     return response.text
 
-def get_parking(point, radius, duration):
-    url = "https://api.iq.inrix.com/lots/v3?point="+ point +"&radius=" + radius + "&duration" + duration
-    
+def get_parking(point, radius, entry, duration):
+    url = "https://api.iq.inrix.com/lots/v3?point="+ point +"&radius=" + radius + "&entry_time=" + entry + "&duration=" + duration
     payload = {}
     headers = {
     'Authorization': 'Bearer '+get_token()

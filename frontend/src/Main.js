@@ -12,6 +12,8 @@ import {
   useLocation
 } from "react-router-dom";
 
+import * as turf from '@turf/turf';
+
 function useQuery() {
     const { search } = useLocation();
     return React.useMemo(() => new URLSearchParams(search), [search]);
@@ -21,6 +23,7 @@ function Main() {
 
     const query = useQuery();
     const [selectedFlight, setSelectedFlight] = useState(null);
+    const [drivingOption, setDrivingOption] = useState(null);
 
     const [selectingOutbound, setSelectingOutbound] = useState(true);
     const [flightOptions, setFlightOptions] = useState([]);
@@ -62,17 +65,51 @@ function Main() {
         setDestinationCoords([closestEndAirport.geometry.coordinates[1], closestEndAirport.geometry.coordinates[0]]);
         setStartIata(closestStartAirport.properties.iata_code);
         setEndIata(closestEndAirport.properties.iata_code);
-
-        // console.log(startCoords);
-        // console.log(originCoords);
-        // console.log(destinationCoords);
-        // console.log(endCoords);
     },[]);
+
+    const setFlight = (flight) => {
+        setSelectedFlight(flight);
+
+        const startDate = new Date(flight.legs[0].departureDateTime);
+        startDate.setHours(startDate.getHours() - 2);
+        const endDate = new Date(flight.legs[1].arrivalDateTime);
+        startDate.setHours(startDate.getHours() + 2);
+        const durationInMinutes = (endDate - startDate) / 1000 / 60;
+
+        console.log(durationInMinutes);
+        
+        // get driving route
+        fetch(`https://routing.openstreetmap.de/routed-car/route/v1/driving/${startCoords[1]},${startCoords[0]};${originCoords[1]},${originCoords[0]}?overview=false&geometries=polyline&steps=true`)
+        .then(response => response.json())
+        .then(data => {
+            const distance = data.routes[0].distance;
+            const duration = data.routes[0].duration;
+            const points = data.routes[0].legs[0].steps.map((s) => s.maneuver.location);
+            // console.log(distance,duration,points);
+            // console.log(JSON.stringify(points));
+            const linestring1 = turf.lineString(points, {name: 'Line'});
+            setDrivingOption({
+                distance,
+                duration,
+                linestring: linestring1
+            });
+
+        });
+
+        // get parking
+        const url = `http://127.0.0.1:5000/parking?point=${originCoords[0]}%7C${originCoords[1]}&radius=1000&entry=${startDate.toISOString().substring(0,16).replace(":","%3A")+"Z"}&duration=${durationInMinutes}`
+        console.log(url);
+        fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+        });
+    }
 
     return (
         <div>
             <JetStreamMap/>
-            {!selectedFlight && <SelectFlight setFlight={setSelectedFlight}/>}
+            {!selectedFlight && <SelectFlight setFlight={setFlight} origin={startIata} destination={endIata} />}
             {selectedFlight && <>
                 <SelectTransport start={startCoords} end={originCoords} startTime={selectedFlight.legs[0].departureDateTime} endTime={selectedFlight.legs[1].arrivalDateTime}/>
                 <TripItinerary flight={selectedFlight} origin={startIata} destination={endIata}/>

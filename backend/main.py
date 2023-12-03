@@ -2,6 +2,7 @@ from flask import Flask, render_template, jsonify, request
 from inrix import get_route, get_parking
 from flight import search_flights
 from flask_cors import CORS
+import urllib.parse
 from transit import get_transit_info
 
 app = Flask(__name__)
@@ -20,10 +21,11 @@ def api_route():
 
 @app.route('/parking', methods=['GET'])
 def api_parking():
-    point = request.args.get('point')
-    radius = request.args.get('radius')
-    duration = request.args.get('duration')
-    return get_parking(point, radius, duration)
+    point = urllib.parse.quote(request.args.get('point'))
+    entry = urllib.parse.quote(request.args.get('entry'))
+    radius = urllib.parse.quote(request.args.get('radius'))
+    duration = urllib.parse.quote(request.args.get('duration'))
+    return get_parking(point, radius, entry, duration)
 
 @app.route('/flights', methods=['GET'])
 def api_flights():
