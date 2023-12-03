@@ -8,7 +8,7 @@ function SelectTransportItem({ Mode, LeaveBy, Duration, Cost, handleClick }) {
             </div>
             <div style={{ display: 'flex' }}>
                 <p style={{ marginRight: 'auto' }}>Cost: ${ Cost }</p>
-                <button onClick={ handleClick } style={{ marginLeft: 'auto' }}>Select</button>
+                <button onClick={ handleClick } className="button is-primary" style={{ marginLeft: 'auto' }}>Select</button>
             </div>
             <hr style={{
                 border: 0,
