@@ -97,7 +97,7 @@ const JetStreamMap = forwardRef(function JetStreamMap( { origin, des, start, end
       data: start_finish_data,
       iconAtlas: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.png',
       iconMapping: {
-        marker: { x: 0, y: 0, width: 128, height: 128, anchorY: 128, mask: false }
+        marker: { x: 0, y: 0, width: 128, height: 128, anchorY: 128, mask: true }
       },
       getIcon: d => 'marker',
       sizeScale: 10,
@@ -112,7 +112,7 @@ const JetStreamMap = forwardRef(function JetStreamMap( { origin, des, start, end
       getSourcePosition: d => d.from.coordinates,
       getTargetPosition: d => d.to.coordinates,
       getSourceColor: [0, 0, 140],
-      getTargetColor: [140, 0, 0],
+      getTargetColor: [0, 0, 140],
       getWidth: 10,
       getHeight: 0.5,
     })
