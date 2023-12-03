@@ -15,8 +15,14 @@ function LegInfo(props) {
             } else {
                 setDepartureTime(temp.toString().slice(0,2) + ":" + temp.toString().slice(2,4) + "PM")
             }
+        } else if(temp > 1200)
+            {
+                setDepartureTime(temp.toString().slice(0,2) + ":" + temp.toString().slice(2,4) + "PM")
+            }
+        else if (temp < 1000){
+            setDepartureTime(temp.toString().slice(0,1) + ":" + temp.toString().slice(1,4) + "AM")
         } else {
-                setDepartureTime(temp.toString().slice(0,2) + ":" + temp.toString().slice(2,4) + "AM")
+            setDepartureTime(temp.toString().slice(0,2) + ":" + temp.toString().slice(2,4) + "AM")
         }
         temp = parseInt(props.leg.arrivalTime.replace(/:/g, ''));
         if(temp > 1259) {
@@ -27,12 +33,12 @@ function LegInfo(props) {
                 setArrivalTime(temp.toString().slice(0,1) + ":" + temp.toString().slice(1,4) + "PM")
             } else {
                 if(temp > 1159) {
-                    setArrivalTime(temp.toString().slice(0,2) + ":" + temp.toString().slice(2,4) + "PM")
+                    setArrivalTime(temp.toString().slice(0,2) + ":" + temp.toString().slice(2,4) + "AM")
                 } else {
-                setArrivalTime(temp.toString().slice(0,2) + ":" + temp.toString().slice(2,4) + "PM")
+                setArrivalTime(temp.toString().slice(0,2) + ":" + temp.toString().slice(2,4) + "AM")
             } } }
         else {
-            setArrivalTime(temp.toString().slice(0,2) + ":" + temp.toString().slice(2,4) + "AM")
+            setArrivalTime(temp.toString().slice(0,2) + ":" + temp.toString().slice(2,4) + "PM")
         }
         temp = 0;
     }
