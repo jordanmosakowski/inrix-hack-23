@@ -12,8 +12,8 @@ function SelectTransport(props) {
     return (
         <div className="SelectTransport">
             <h2>Select Transport</h2>
-            <SelectTransportItem Mode={ mode } LeaveBy={ leaveBy } Duration={ duration } Cost={ cost } handleClick={ props.handleClick } />
-            <SelectTransportItem Mode="Driving" LeaveBy="9:50" Duration="32" Cost="200" />
+            {props.driving && <SelectTransportItem mode="Driving" leaveBy={ props.driving.leaveBy.toLocaleTimeString() } duration={Math.round(props.driving.duration)} cost={ props.driving.parkingCost } handleClick={ props.handleClick } />}
+            {/* <SelectTransportItem Mode="Driving" LeaveBy="9:50" Duration="32" Cost="200" /> */}
         </div>
     );
 }

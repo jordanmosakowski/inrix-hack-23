@@ -23,13 +23,13 @@ function TripItinerary(props) {
             <div className='grid2'>
                 <div>
                     <h2>Outbound</h2>
-                    <div>{new Date(query.get("startDate")).toLocaleDateString()}</div>
+                    <div>{new Date(query.get("startDate")).toLocaleDateString("en-US", { timeZone: 'UTC' })}</div>
                     <div>{props.flight.legs[0].departureTime} - {props.flight.legs[0].arrivalTime}</div>
                     <div>{props.flight.legs[0].segments.map((segment, index) => segment.designatorCode).join(", ")}</div>
                 </div>
                 <div>
                     <h2>Return</h2>
-                    <div>{new Date(query.get("startDate")).toLocaleDateString()}</div>
+                    <div>{new Date(query.get("endDate")).toLocaleDateString("en-US", { timeZone: 'UTC' })}</div>
                     <div>{props.flight.legs[1].departureTime} - {props.flight.legs[1].arrivalTime}</div>
                     <div>{props.flight.legs[1].segments.map((segment, index) => segment.designatorCode).join(", ")}</div>
                 </div>

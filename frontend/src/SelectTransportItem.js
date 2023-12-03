@@ -1,13 +1,13 @@
-function SelectTransportItem({ Mode, LeaveBy, Duration, Cost, handleClick }) {
+function SelectTransportItem({ mode, leaveBy, duration, cost, handleClick }) {
     return (
         <div className="SelectTransportItem">
-            <p style={{display: 'flex', marginRight: 'auto'}}>Mode: { Mode }</p>
+            <p style={{display: 'flex', marginRight: 'auto'}}>Mode: { mode }</p>
             <div style={{ display: 'flex' }}>
-                <p style={{ marginRight: 'auto' }}>Leave By: { LeaveBy }am</p>
-                <p style={{ marginLeft: 'auto' }}>{ Duration } mins</p>
+                <p style={{ marginRight: 'auto' }}>Leave By: { leaveBy }</p>
+                <p style={{ marginLeft: 'auto' }}>{ duration } mins</p>
             </div>
             <div style={{ display: 'flex' }}>
-                <p style={{ marginRight: 'auto' }}>Cost: ${ Cost }</p>
+                <p style={{ marginRight: 'auto' }}>Cost: { cost }</p>
                 <button onClick={ handleClick } className="button is-primary" style={{ marginLeft: 'auto' }}>Select</button>
             </div>
             <hr style={{
