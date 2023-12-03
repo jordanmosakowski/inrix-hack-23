@@ -1,10 +1,9 @@
 
 import { useEffect, useState } from 'react';
-import FlightInfoPanel from './FlightInfoPanel';
+import TripItinerary from './TripItinerary';
 import JetStreamMap from './JetStreamMap';
 import SelectFlight from './SelectFlight';
 import SelectTransport from './SelectTransport';
-import airportData from './airports.json';
 import React from "react";
 
 function Main() {
@@ -16,7 +15,7 @@ function Main() {
             {!selectedFlight && <SelectFlight setFlight={setSelectedFlight}/>}
             {selectedFlight && <>
                 <SelectTransport/>
-                <FlightInfoPanel/>
+                <TripItinerary flight={selectedFlight}/>
             </>}
         </div>
     );

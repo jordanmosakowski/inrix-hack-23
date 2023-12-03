@@ -26,6 +26,11 @@ $text-strong: #333333;
 
 }
 
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
 .flight-info-box {
   max-width: 600px;
   padding: 10px;
@@ -66,7 +71,7 @@ $text-strong: #333333;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
 
-.FlightInfoPanel {
+.TripItinerary {
   padding: 10px;
   position: absolute;
   left: 3vh;
