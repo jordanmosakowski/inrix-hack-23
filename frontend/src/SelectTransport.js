@@ -12,7 +12,7 @@ function SelectTransport(props) {
     return (
         <div className="SelectTransport">
             <h2>Select Transport</h2>
-            <SelectTransportItem Mode={ mode } LeaveBy={ leaveBy } Duration={ duration } Cost={ cost } />
+            <SelectTransportItem Mode={ mode } LeaveBy={ leaveBy } Duration={ duration } Cost={ cost } handleClick={ props.handleClick } />
             <SelectTransportItem Mode="Driving" LeaveBy="9:50" Duration="32" Cost="200" />
         </div>
     );
