@@ -22,7 +22,7 @@ function TripItinerary(props) {
         let hours = date.getHours();
         let minutes = date.getMinutes();
         let ampm = hours >= 12 ? 'PM' : 'AM';
-        if(hours > 13) {
+        if(hours >= 13) {
             hours -= 12;
         }
         if(hours == 0) {
