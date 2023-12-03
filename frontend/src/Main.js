@@ -85,8 +85,6 @@ function Main() {
             const distance = data.routes[0].distance;
             const duration = data.routes[0].duration;
             const points = data.routes[0].legs[0].steps.map((s) => s.maneuver.location);
-            // console.log(distance,duration,points);
-            // console.log(JSON.stringify(points));
             const linestring1 = turf.lineString(points, {name: 'Line'});
             setDrivingOption({
                 distance,
@@ -111,8 +109,8 @@ function Main() {
 
     return (
         <div>
-            {originCoords && destinationCoords && startCoords && endCoords && <JetStreamMap origin={originCoords} des={destinationCoords} start={startCoords} end={endCoords} ref={jsmap} />}
-            {!selectedFlight && <SelectFlight setFlight={setSelectedFlight} origin={startIata} destination={endIata}/>}
+            {originCoords && destinationCoords && startCoords && endCoords && <JetStreamMap route1LineStr={drivingOption?.linestring} origin={originCoords} des={destinationCoords} start={startCoords} end={endCoords} ref={jsmap} />}
+            {!selectedFlight && <SelectFlight setFlight={setFlight} origin={startIata} destination={endIata}/>}
             {selectedFlight && <>
                 <SelectTransport start={startCoords} end={originCoords} startTime={selectedFlight.legs[0].departureDateTime} endTime={selectedFlight.legs[1].arrivalDateTime} handleClick={selectTransport} />
                 <TripItinerary flight={selectedFlight} origin={startIata} destination={endIata}/>
