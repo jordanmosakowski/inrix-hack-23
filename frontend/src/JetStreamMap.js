@@ -82,9 +82,9 @@ function JetStreamMap() {
       data: 'https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_10m_airports.geojson',
       //Styles
       filled: true,
-      pointRadiusMinPixels: 1,
+      pointRadiusMinPixels: 5,
       pointRadiusScale: 2000,
-      getPointRadius: f => 3,
+      getPointRadius: f => 1,
       getFillColor: [86, 144, 58, 250],
       pickable: true,
       autoHighlight: true,
@@ -128,6 +128,7 @@ function JetStreamMap() {
           mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
           mapStyle={MAP_STYLE}
         />
+      
       </DeckGL>
     </div>
   );
