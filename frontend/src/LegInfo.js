@@ -4,7 +4,7 @@ function LegInfo(props) {
         let hours = Number(time.split(":")[0]);
         let minutes = Number(time.split(":")[1]);
         let ampm = hours >= 12 ? 'PM' : 'AM';
-        if(hours > 13) {
+        if(hours >= 13) {
             hours -= 12;
         }
         if(hours == 0) {
