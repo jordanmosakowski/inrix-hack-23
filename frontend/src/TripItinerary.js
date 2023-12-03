@@ -15,6 +15,7 @@ function TripItinerary(props) {
     const query = useQuery();
     useEffect(() => {
         console.log(props.flight);
+        console.log(props.transport);
     })
     return (
         <div className="TripItinerary">
@@ -35,6 +36,20 @@ function TripItinerary(props) {
                 </div>
             </div>
             <h3>${props.flight.minPrice}</h3>
+            <br />
+            <h2>Transport</h2>
+            <div className='grid2'>
+                <div>
+                    <h2>Details</h2>
+                    <div>{props.transport.mode}</div>
+                    <div>{props.transport.leaveBy}</div>
+                </div>
+                <div>
+                    <h2>Cost</h2>
+                    <div>{props.transport.cost}</div>
+                    <div>{props.transport.duration}</div>
+                </div>
+            </div>
         </div>
     )
 }
