@@ -100,7 +100,7 @@ function Main() {
             fetch(url)
             .then(response => response.json())
             .then(data => {
-                console.log(data);
+                // console.log(data);
                 const parking = data.result;
                 let parkingCost = parking.find((p) => p.calculatedRates?.length > 0) || null;
                 parkingCost = parkingCost ? (parkingCost.currency + parkingCost.calculatedRates[0].rateCost.toString()) : "Unknown";
@@ -110,6 +110,12 @@ function Main() {
                 }));
             });
 
+        });
+
+        fetch(`http://127.0.0.1:5000/transit?start=${startCoords[0]},${startCoords[1]}&end=${originCoords[0]},${originCoords[1]}&time=${startDate.toISOString()}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
         });
     }
     const selectTransport = () => {
