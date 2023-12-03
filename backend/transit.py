@@ -1,4 +1,5 @@
 import os
+import requests
 from dotenv import load_dotenv
 load_dotenv()
 TRANSIT_API_KEY = os.getenv('TRANSIT_API_KEY')

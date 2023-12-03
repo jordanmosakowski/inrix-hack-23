@@ -1,7 +1,9 @@
-import { useState } from 'react';
 import SelectTransportItem from './SelectTransportItem';
+import { useEffect, useState } from 'react';
+import React from "react";
 
-function SelectTransport() {
+function SelectTransport(props) {
+
     const [mode, setMode] = useState('Driving');
     const [leaveBy, setLeaveBy] = useState('9:50');
     const [duration, setDuration] = useState('32');

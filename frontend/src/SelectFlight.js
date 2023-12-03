@@ -1,58 +1,13 @@
 import LegInfo from './LegInfo';
 
 import { useEffect, useState } from 'react';
-import airportData from './airports.json';
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Link,
-  useLocation
-} from "react-router-dom";
 
-function useQuery() {
-    const { search } = useLocation();
-    return React.useMemo(() => new URLSearchParams(search), [search]);
-}
 
 function SelectFlight(props) {
 
-    const query = useQuery();
-    const [flightOptions, setFlightOptions] = useState([]);
-    const [startIata, setStartIata] = useState("");
-    const [endIata, setEndIata] = useState("");
-    const [cities, setCities] = useState([]);
-    const [airlines, setAirlines] = useState([]);
-
     useEffect(() => {
-        let startAddrCoords = query.get("origin").split(',').map((coord) => parseFloat(coord));
-        let endAddrCoords = query.get("destination").split(',').map((coord) => parseFloat(coord));
-        let closestStartAirport = null;
-        let closestStartAirportDistance = null;
-        airportData.features.forEach((airport) => {
-            let distance = Math.sqrt(Math.pow(airport.geometry.coordinates[1] - startAddrCoords[0], 2) + Math.pow(airport.geometry.coordinates[0] - startAddrCoords[1], 2));
-            if (closestStartAirportDistance === null || distance < closestStartAirportDistance) {
-                closestStartAirport = airport;
-                closestStartAirportDistance = distance;
-            }
-        })
-
-        let closestEndAirport = null;
-        let closestEndAirportDistance = null;
-        airportData.features.forEach((airport) => {
-            let distance = Math.sqrt(Math.pow(airport.geometry.coordinates[1] - endAddrCoords[0], 2) + Math.pow(airport.geometry.coordinates[0] - endAddrCoords[1], 2));
-            if (closestEndAirportDistance === null || distance < closestEndAirportDistance) {
-                closestEndAirport = airport;
-                closestEndAirportDistance = distance;
-            }
-        })
-
-        setStartIata(closestStartAirport.properties.iata_code);
-        setEndIata(closestEndAirport.properties.iata_code);
-
-        // console.log("Start:",closestStartAirport.properties.iata_code, startAddrCoords);
-        // console.log("End:",closestEndAirport.properties.iata_code, endAddrCoords);
-        // call localhost:5000/flights with origin, destination, departure_date, return_date
-        fetch('http://127.0.0.1:5000/flights?origin='+closestStartAirport.properties.iata_code+'&destination='+closestEndAirport.properties.iata_code+'&departure_date=2024-01-01&return_date=2024-01-02')
+        fetch('http://127.0.0.1:5000/flights?origin='+props.origin+'&destination='+props.destination+'&departure_date=2024-01-01&return_date=2024-01-02')
             .then(response => response.json())
             .then(data => {
                 let options = data.trips;
@@ -73,7 +28,6 @@ function SelectFlight(props) {
                     let bPrice = b.minPrice;
                     return aPrice - bPrice;
                 });
-                console.log(options);
                 setFlightOptions(options);
             });
     },[]);
@@ -81,6 +35,9 @@ function SelectFlight(props) {
 
     const [selectingOutbound, setSelectingOutbound] = useState(true);
     const [selectedOutbound, setSelectedOutbound] = useState(null);
+    const [flightOptions, setFlightOptions] = useState([]);
+    const [cities, setCities] = useState([]);
+    const [airlines, setAirlines] = useState([]);
     
 
     let getOutboundLegs = () => {
@@ -98,7 +55,6 @@ function SelectFlight(props) {
             let bScore = b[0].legs[0].score;
             return bScore - aScore;
         });
-        console.log(legs);
         return legs;
     }
 
@@ -112,12 +68,12 @@ function SelectFlight(props) {
             <div className='SelectFlight'>
                 <h2>Select {selectingOutbound ? "Outbound" : "Inbound"} Trip</h2>
 
-                {selectingOutbound && <h3>{cities.find((c) => c.code == startIata)?.name || ""} → {cities.find((c) => c.code == endIata)?.name || ""}</h3>}
+                {selectingOutbound && <h3>{cities.find((c) => c.code == props.origin)?.name || ""} → {cities.find((c) => c.code == props.destination)?.name || ""}</h3>}
                 {selectingOutbound && getOutboundLegs().map((leg, index) => (
                     <LegInfo select={() => setInbound(leg)} key={leg[0].legs[0].id} leg={leg[0].legs[0]} fares={Math.min(...leg.map((l) => l.minPrice))} airlines={airlines} />
                 ))}
 
-                {!selectingOutbound && <h3>{cities.find((c) => c.code == endIata)?.name || ""} → {cities.find((c) => c.code == startIata)?.name || ""}</h3>}
+                {!selectingOutbound && <h3>{cities.find((c) => c.code == props.destination)?.name || ""} → {cities.find((c) => c.code == props.origin)?.name || ""}</h3>}
                 {!selectingOutbound && selectedOutbound.map((leg, index) => (
                     <LegInfo select={() => props.setFlight(leg)} key={leg.legs[1].id} leg={leg.legs[1]} fares={leg.minPrice} airlines={airlines} />
                 ))}
