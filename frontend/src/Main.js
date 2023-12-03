@@ -73,7 +73,7 @@ function Main() {
     },[]);
 
     const getTransportOptions = (flight, num) => {
-        let startDate, endDate, durationInMinutes;
+        let startDate, endDate, durationInMinutes,durationInDays;
         if(num == 0) {
             startDate = new Date(flight.legs[0].departureDateTime);
             startDate.setHours(startDate.getHours() - 2);
@@ -84,6 +84,9 @@ function Main() {
         else if(num == 1) {
             startDate = new Date(flight.legs[0].arrivalDateTime);
             startDate.setHours(startDate.getHours() + 1);
+            endDate = new Date(flight.legs[1].departureDateTime);
+            durationInDays = Math.ceil((endDate - startDate) / 1000 / 60 / 60 / 24);
+
         }
         else if(num == 2) {
             startDate = new Date(flight.legs[1].departureDateTime);
@@ -153,8 +156,18 @@ function Main() {
                     }));
                 });
             }
-            else if(num == 0) {
-                // call rental car api
+            else if(num == 1) {
+                const url = `http://127.0.0.1:5000/rentals?iataCode=${endIata}`;
+                fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const cars = data.CarData.data.quotes;
+                    let carCost = Math.min(...cars.map((c) => c.price));
+                    setDrivingOption((prev) => ({
+                        ...prev,
+                        cost: "$"+carCost * durationInDays
+                    }));
+                }); 
             }
 
         });
@@ -194,7 +207,7 @@ function Main() {
                 duration,
                 time,
                 linestring: linestring2,
-                cost: "Unknown",
+                cost: num == 0 ? "€2.10" : "$2.25",
             });
         });
     }
@@ -209,10 +222,13 @@ function Main() {
         if(currentSelection == 0 || currentSelection == 2) {
             jsmap.current.doTransition();
         }
+        if(currentSelection == 3) {
+            jsmap.current.only1();
+        }
         if(currentSelection < 3) {
             getTransportOptions(selectedFlight, currentSelection+1);
-            setCurrentSelection(currentSelection + 1);
         }
+        setCurrentSelection(currentSelection + 1);
         setDrivingOption(null);
         setTransitOption(null);
     }
@@ -221,10 +237,11 @@ function Main() {
         <div>
             {originCoords && destinationCoords && startCoords && endCoords && <JetStreamMap route1LineStr={drivingOption?.linestring} route2LineStr={transitOption?.linestring} origin={originCoords} des={destinationCoords} start={startCoords} end={endCoords} ref={jsmap} />}
             {!selectedFlight && <SelectFlight setFlight={setFlight} origin={startIata} destination={endIata}/>}
-            {selectedFlight && <>
-                <SelectTransport leaveBy={currentSelection %2 == 0} location={(currentSelection == 0 || currentSelection == 3) ? startIata : endIata} to={currentSelection %2 == 0} driving={drivingOption} transit={transitOption} start={startCoords} end={originCoords} startTime={selectedFlight.legs[0].departureDateTime} endTime={selectedFlight.legs[1].arrivalDateTime} handleClick={chooseTransport} />
+            {selectedFlight && currentSelection < 4 &&
+                <SelectTransport leaveBy={currentSelection %2 == 0} location={(currentSelection == 0 || currentSelection == 3) ? startIata : endIata} to={currentSelection %2 == 0} driving={drivingOption} transit={transitOption} start={startCoords} end={originCoords} startTime={selectedFlight.legs[0].departureDateTime} endTime={selectedFlight.legs[1].arrivalDateTime} handleClick={chooseTransport} />}
+            {selectedFlight && 
                 <TripItinerary flight={selectedFlight} origin={startIata} destination={endIata} transport={selectedTransport} />
-            </>}
+            }
         </div>
     );
 }

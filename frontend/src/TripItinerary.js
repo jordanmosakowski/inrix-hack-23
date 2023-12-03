@@ -53,6 +53,22 @@ function TripItinerary(props) {
         string += minutes + " " + ampm;
         return string;
     }
+
+    const computeCost = () => {
+        const flightCost = props.flight.minPrice;
+        let transportCost = 0;
+        props.transport.forEach((transport) => {
+            if(transport.cost) {
+                if(transport.cost[0] == "$") {
+                    transportCost += Number(transport.cost.substring(1));
+                }
+                else {
+                    transportCost += Number(transport.cost.substring(1) * 1.1);
+                }
+            }
+        })
+        return flightCost + transportCost;
+    }
     
     return (
         <div className="TripItinerary">
@@ -69,6 +85,9 @@ function TripItinerary(props) {
                         <div>Duration: {Math.round(props.transport[0].duration)} mins</div>
                     </div>
                 </div>
+                {props.transport[0].cost && <div>
+                    <div>Cost: {props.transport[0].cost}</div>
+                </div>}
             </>}
             <h3>Flight: {props.flight.legs[0].departureAirportCode} - {props.flight.legs[0].arrivalAirportCode}</h3>
             <div>{new Date(query.get("startDate")).toLocaleDateString("en-US", { timeZone: 'UTC' })}</div>
@@ -85,8 +104,10 @@ function TripItinerary(props) {
                         <div>Duration: {Math.round(props.transport[1].duration)} mins</div>
                     </div>
                 </div>
+                {props.transport[1].cost && <div>
+                    <div>Cost: {props.transport[1].cost}</div>
+                </div>}
             </>}
-            <br/>
             <h2>Return</h2>
             {props.transport.length>2 && <>
                 <h3>{props.transport[2].name} to {props.flight.legs[1].departureAirportCode}</h3>
@@ -98,6 +119,9 @@ function TripItinerary(props) {
                         <div>Duration: {Math.round(props.transport[2].duration)} mins</div>
                     </div>
                 </div>
+                {props.transport[2].cost && <div>
+                    <div>Cost: {props.transport[2].cost}</div>
+                </div>}
             </>}
             <h3>Flight: {props.flight.legs[1].departureAirportCode} - {props.flight.legs[1].arrivalAirportCode}</h3>
             <div>{new Date(query.get("endDate")).toLocaleDateString("en-US", { timeZone: 'UTC' })}</div>
@@ -114,8 +138,12 @@ function TripItinerary(props) {
                         <div>Duration: {Math.round(props.transport[3].duration)} mins</div>
                     </div>
                 </div>
+                {props.transport[3].cost && <div>
+                    <div>Cost: {props.transport[3].cost}</div>
+                </div>}
             </>}
             
+            <h3>Total Cost: ${computeCost()}</h3>
         </div>
     )
 }

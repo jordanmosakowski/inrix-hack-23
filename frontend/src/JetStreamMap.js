@@ -46,6 +46,9 @@ const JetStreamMap = forwardRef(function JetStreamMap( { origin, des, start, end
         viewTransition2([origin[1], origin[0]]);
         setTransitionFlag(0);
       }
+    },
+    async only1() {
+      viewTransition3([des[1], des[0]]);
     }
   }));
 
@@ -55,6 +58,21 @@ const JetStreamMap = forwardRef(function JetStreamMap( { origin, des, start, end
         longitude: (origin[1] + e[0]) / 2,
         latitude: (origin[0] + e[1]) / 2,
         zoom: 2.5,
+        pitch: 30,
+        bearing: 0,
+        transitionDuration: '3000',
+        transitionInterpolator: new FlyToInterpolator(),
+        onTransitionEnd: resolve
+      });
+    });
+  };
+
+  const viewTransition3 = (e) => {
+    return new Promise((resolve) => {
+      setViewState({
+        longitude: (origin[1] + e[0]*1.25) / 2,
+        latitude: (origin[0] + e[1]) / 2,
+        zoom: 2,
         pitch: 30,
         bearing: 0,
         transitionDuration: '3000',
@@ -115,7 +133,7 @@ const JetStreamMap = forwardRef(function JetStreamMap( { origin, des, start, end
       getTargetPosition: d => d.to.coordinates,
       getSourceColor: [0, 0, 140],
       getTargetColor: [0, 0, 140],
-      getWidth: 10,
+      getWidth: 5,
       getHeight: 0.5,
     })
   ];
