@@ -1,5 +1,4 @@
-
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import TripItinerary from './TripItinerary';
 import JetStreamMap from './JetStreamMap';
 import SelectFlight from './SelectFlight';
@@ -22,6 +21,7 @@ function useQuery() {
 function Main() {
 
     const query = useQuery();
+    const jsmap = useRef(null);
     const [selectedFlight, setSelectedFlight] = useState(null);
     const [drivingOption, setDrivingOption] = useState(null);
 
@@ -105,13 +105,16 @@ function Main() {
             console.log(data);
         });
     }
+    const selectTransport = () => {
+        jsmap.current.doTransition();
+    }
 
     return (
         <div>
-            <JetStreamMap/>
-            {!selectedFlight && <SelectFlight setFlight={setFlight} origin={startIata} destination={endIata} />}
+            {originCoords && destinationCoords && startCoords && endCoords && <JetStreamMap origin={originCoords} des={destinationCoords} start={startCoords} end={endCoords} ref={jsmap} />}
+            {!selectedFlight && <SelectFlight setFlight={setSelectedFlight} origin={startIata} destination={endIata}/>}
             {selectedFlight && <>
-                <SelectTransport start={startCoords} end={originCoords} startTime={selectedFlight.legs[0].departureDateTime} endTime={selectedFlight.legs[1].arrivalDateTime}/>
+                <SelectTransport start={startCoords} end={originCoords} startTime={selectedFlight.legs[0].departureDateTime} endTime={selectedFlight.legs[1].arrivalDateTime} handleClick={selectTransport} />
                 <TripItinerary flight={selectedFlight} origin={startIata} destination={endIata}/>
             </>}
         </div>

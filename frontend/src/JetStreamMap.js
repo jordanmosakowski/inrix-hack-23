@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useImperativeHandle, forwardRef } from 'react';
 import DeckGL, { GeoJsonLayer, IconLayer, ArcLayer, FlyToInterpolator } from 'deck.gl';
 import { Map } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -7,53 +7,55 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 const MAPBOX_ACCESS_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 const MAP_STYLE = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
 
-const INITIAL_VIEW_STATE = {
-  longitude: 8.5621518,
-  latitude: 50.0379326,
-  zoom: 10,
-  pitch: 30,
-  bearing: 0
-};
+const JetStreamMap = forwardRef(function JetStreamMap( { origin, des, start, end, PassItUp }, ref ) {
 
-const start_finish_data = [
-  {
-    from: {
-      address: 'Neue Mainzer Strasse 66 60311 Frankfurt Am Main Germany',
-      coordinates: [8.671700, 50.112780]
+  const [transitionFlag, setTransitionFlag] = useState(0);
+  const [viewState, setViewState] = useState({
+    longitude: origin[1],
+    latitude: origin[0],
+    zoom: 10,
+    pitch: 30,
+    bearing: 0
+  });
+
+  const start_finish_data = [
+    {
+      from: {
+        coordinates: [origin[1], origin[0]]
+      },
+      to: {
+        coordinates: [des[1], des[0]]
+      },
+      coordinates: [start[1], start[0]], 
     },
-    to: {
-      address: '475 Sansome St 10th floor, San Francisco, CA 94111',
-      coordinates: [-122.401947, 37.794708]
+    {
+      from: {},
+      to: {},
+      coordinates: [end[1], end[0]]
     },
-    coordinates: [8.671700, 50.112780], 
-  },
-  {
-    from: {},
-    to: {},
-    coordinates: [-122.401947, 37.794708]
-  },
-];
+  ];
 
-
-function JetStreamMap() {
-
-  const [viewState, setViewState] = useState(INITIAL_VIEW_STATE);
-
-  const onClick = async (info) => {
-    if (info.object) {
-      //alert(info.object.geometry.coordinates + "\n" + info.object.properties.name);
-      await viewTransition1([-122.41669, 37.7853]);
+  useImperativeHandle(ref, () => ({
+    async doTransition() {
+      await viewTransition1([des[1], des[0]]);
       //const delay = ms => new Promise(res => setTimeout(res, ms));
       //await delay(1000);
-      viewTransition2([-122.41669, 37.7853]);
+      console.log(transitionFlag);
+      if (transitionFlag === 0) {
+        viewTransition2([des[1], des[0]]);
+        setTransitionFlag(1);
+      } else {
+        viewTransition2([origin[1], origin[0]]);
+        setTransitionFlag(0);
+      }
     }
-  }
+  }));
 
   const viewTransition1 = (e) => {
     return new Promise((resolve) => {
       setViewState({
-        longitude: (INITIAL_VIEW_STATE.longitude + e[0]) / 2,
-        latitude: (INITIAL_VIEW_STATE.latitude + e[1]) / 2,
+        longitude: (origin[1] + e[0]) / 2,
+        latitude: (origin[0] + e[1]) / 2,
         zoom: 2.5,
         pitch: 30,
         bearing: 0,
@@ -74,7 +76,7 @@ function JetStreamMap() {
       transitionDuration: '5000',
       transitionInterpolator: new FlyToInterpolator(),
     });
-  }
+  };
   
   const layers = [
     new GeoJsonLayer({
@@ -88,14 +90,14 @@ function JetStreamMap() {
       getFillColor: [86, 144, 58, 250],
       pickable: true,
       autoHighlight: true,
-      onClick
+      opacity: 0.9,
     }),
     new IconLayer({
       id: 'start-finish',
       data: start_finish_data,
       iconAtlas: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.png',
       iconMapping: {
-        marker: { x: 0, y: 0, width: 128, height: 128, anchorY: 128, mask: false }
+        marker: { x: 0, y: 0, width: 128, height: 128, anchorY: 128, mask: true }
       },
       getIcon: d => 'marker',
       sizeScale: 10,
@@ -110,7 +112,7 @@ function JetStreamMap() {
       getSourcePosition: d => d.from.coordinates,
       getTargetPosition: d => d.to.coordinates,
       getSourceColor: [0, 0, 140],
-      getTargetColor: [140, 0, 0],
+      getTargetColor: [0, 0, 140],
       getWidth: 10,
       getHeight: 0.5,
     })
@@ -132,6 +134,6 @@ function JetStreamMap() {
       </DeckGL>
     </div>
   );
-}
+},[]);
 
 export default JetStreamMap;
