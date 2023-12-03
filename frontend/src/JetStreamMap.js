@@ -40,7 +40,6 @@ const JetStreamMap = forwardRef(function JetStreamMap( { origin, des, start, end
       await viewTransition1([des[1], des[0]]);
       //const delay = ms => new Promise(res => setTimeout(res, ms));
       //await delay(1000);
-      console.log(transitionFlag);
       if (transitionFlag === 0) {
         viewTransition2([des[1], des[0]]);
         setTransitionFlag(1);
@@ -77,9 +76,11 @@ const JetStreamMap = forwardRef(function JetStreamMap( { origin, des, start, end
       transitionInterpolator: new FlyToInterpolator(),
     });
   };
-  const data = {"type":"Feature","properties":{"name":"Line"},"geometry":{"type":"LineString","coordinates":[[8.671658,50.113273],[8.6718,50.113395],[8.669847,50.113939],[8.66874,50.113432],[8.670851,50.110478],[8.672477,50.1086],[8.664604,50.103964],[8.665247,50.102207],[8.667704,50.100132],[8.670329,50.09776],[8.670319,50.097352],[8.654187,50.078056],[8.578762,50.054958],[8.569031,50.053468],[8.566275,50.053168],[8.565868,50.053143],[8.564077,50.050855],[8.56863,50.050244],[8.571681,50.050921]]}}
 
   
+  const data = {"type":"Feature","properties":{"name":"Line"},"geometry":{"type":"LineString","coordinates":[[8.671658,50.113273],[8.6718,50.113395],[8.669847,50.113939],[8.66874,50.113432],[8.670851,50.110478],[8.672477,50.1086],[8.664604,50.103964],[8.665247,50.102207],[8.667704,50.100132],[8.670329,50.09776],[8.670319,50.097352],[8.654187,50.078056],[8.578762,50.054958],[8.569031,50.053468],[8.566275,50.053168],[8.565868,50.053143],[8.564077,50.050855],[8.56863,50.050244],[8.571681,50.050921]]}}
+
+
   const layers = [
     new GeoJsonLayer({
       id: 'airports',
@@ -121,7 +122,6 @@ const JetStreamMap = forwardRef(function JetStreamMap( { origin, des, start, end
   ];
 
 
-  
   return (
     <div className="JetStreamMap">
       <DeckGL

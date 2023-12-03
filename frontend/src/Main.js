@@ -35,6 +35,8 @@ function Main() {
     const [startCoords, setStartCoords] = useState(null);
     const [endCoords, setEndCoords] = useState(null);
 
+    const [selectedTransport, setSelectedTransport] = useState([]);
+
     useEffect(() => {
         let startAddrCoords = query.get("origin").split(',').map((coord) => parseFloat(coord));
         let endAddrCoords = query.get("destination").split(',').map((coord) => parseFloat(coord));
@@ -118,8 +120,15 @@ function Main() {
             console.log(data);
         });
     }
-    const selectTransport = () => {
+
+    const handleClick = (selectedMode, selectedLeaveBy, selectedDuration, selectedCost) => {
         jsmap.current.doTransition();
+        setSelectedTransport({
+            mode: selectedMode, 
+            leaveBy: selectedLeaveBy, 
+            duration: selectedDuration, 
+            cost: selectedCost
+        });
     }
 
     return (
@@ -127,8 +136,8 @@ function Main() {
             {originCoords && destinationCoords && startCoords && endCoords && <JetStreamMap route1LineStr={drivingOption?.linestring} origin={originCoords} des={destinationCoords} start={startCoords} end={endCoords} ref={jsmap} />}
             {!selectedFlight && <SelectFlight setFlight={setFlight} origin={startIata} destination={endIata}/>}
             {selectedFlight && <>
-                <SelectTransport driving={drivingOption} start={startCoords} end={originCoords} startTime={selectedFlight.legs[0].departureDateTime} endTime={selectedFlight.legs[1].arrivalDateTime} handleClick={selectTransport} />
-                <TripItinerary flight={selectedFlight} origin={startIata} destination={endIata}/>
+                <SelectTransport driving={drivingOption} start={startCoords} end={originCoords} startTime={selectedFlight.legs[0].departureDateTime} endTime={selectedFlight.legs[1].arrivalDateTime} handleClick={handleClick} />
+                <TripItinerary flight={selectedFlight} origin={startIata} destination={endIata} transport={selectedTransport} />
             </>}
         </div>
     );

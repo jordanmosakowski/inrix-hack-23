@@ -1,4 +1,9 @@
 function SelectTransportItem({ mode, leaveBy, duration, cost, handleClick }) {
+
+    const onClickHandler = () => {
+        handleClick(mode, leaveBy, duration, cost);
+    };
+
     return (
         <div className="SelectTransportItem">
             <p style={{display: 'flex', marginRight: 'auto'}}>Mode: { mode }</p>
@@ -8,7 +13,7 @@ function SelectTransportItem({ mode, leaveBy, duration, cost, handleClick }) {
             </div>
             <div style={{ display: 'flex' }}>
                 <p style={{ marginRight: 'auto' }}>Cost: { cost }</p>
-                <button onClick={ handleClick } className="button is-primary" style={{ marginLeft: 'auto' }}>Select</button>
+                <button onClick={ onClickHandler } className="button is-primary" style={{ marginLeft: 'auto' }}>Select</button>
             </div>
             <hr style={{
                 border: 0,
