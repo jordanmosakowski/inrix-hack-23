@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify, request
 from inrix import get_route, get_parking
 from flight import search_flights
+from rental_cars import get_cars
 from flask_cors import CORS
 import urllib.parse
 from transit import get_transit_info
@@ -40,7 +41,13 @@ def api_transit():
     start = request.args.get('start')
     end = request.args.get('end')
     time = request.args.get('time')
-    return get_transit_info(start, end, time)
+    isArrival = request.args.get('isArrival')
+    return get_transit_info(start, end, time,isArrival)
+
+@app.route('/rentals', methods=['GET'])
+def api_rentals():
+    iataCode = request.args.get('iataCode')
+    return get_cars(iataCode)
 
 if __name__ == '__main__':
     app.run(debug=False, port=5000)

@@ -1,6 +1,6 @@
 import requests
 import json
-
+from flask import jsonify, send_file
 from dotenv import load_dotenv
 import os
 
@@ -44,8 +44,9 @@ def search_cars(entity_id):
     response = requests.get(url, headers=headers, params=querystring)
     return response.json()
 
-def main():
-    location_data = search_location("SFO")
+def get_cars(code):
+    return send_file('rental-cars.json', mimetype='application/json')
+    location_data = search_location(code)
 
     if 'data' in location_data and len(location_data['data']) > 0:
         entity_id = location_data['data'][0].get('entity_id')
@@ -57,12 +58,14 @@ def main():
                 "CarData": car_data
             }
 
-            with open('rental-cars.json', 'w') as file:
-                json.dump(combined_data, file, indent=4)
+            return jsonify(combined_data)
+
+            # with open('rental-cars.json', 'w') as file:
+            #     json.dump(combined_data, file, indent=4)
         else:
             print("Entity ID not found in the first location data")
     else:
         print("No data found in location response")
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

@@ -1,53 +1,27 @@
-import { useEffect, useState } from 'react';
-
 function LegInfo(props) {
 
-    const [departureTime, setDepartureTime] = useState(null);
-    const [arrivalTime, setArrivalTime] = useState(null);
-
-    
-    useEffect(() => {
-        let temp = parseInt(props.leg.departureTime.replace(/:/g, ''));
-        if(temp > 1259) {
-            temp = temp - 1200;
-            if(temp < 1000) {
-                setDepartureTime(temp.toString().slice(0,1) + ":" + temp.toString().slice(1,4) + "PM")
-            } else {
-                setDepartureTime(temp.toString().slice(0,2) + ":" + temp.toString().slice(2,4) + "PM")
-            }
-        } else if(temp > 1200)
-            {
-                setDepartureTime(temp.toString().slice(0,2) + ":" + temp.toString().slice(2,4) + "PM")
-            }
-        else if (temp < 1000){
-            setDepartureTime(temp.toString().slice(0,1) + ":" + temp.toString().slice(1,4) + "AM")
-        } else {
-            setDepartureTime(temp.toString().slice(0,2) + ":" + temp.toString().slice(2,4) + "AM")
+    const formatTime = (time) => {
+        let hours = Number(time.split(":")[0]);
+        let minutes = Number(time.split(":")[1]);
+        let ampm = hours >= 12 ? 'PM' : 'AM';
+        if(hours > 13) {
+            hours -= 12;
         }
-        temp = parseInt(props.leg.arrivalTime.replace(/:/g, ''));
-        if(temp > 1259) {
-            temp = temp - 1200
-            if(temp > 1159) {
-                setArrivalTime(temp.toString().slice(0,2) + ":" + temp.toString().slice(2,4) + "PM")
-            } else if(temp < 1000) {
-                setArrivalTime(temp.toString().slice(0,1) + ":" + temp.toString().slice(1,4) + "PM")
-            } else {
-                if(temp > 1159) {
-                    setArrivalTime(temp.toString().slice(0,2) + ":" + temp.toString().slice(2,4) + "AM")
-                } else {
-                setArrivalTime(temp.toString().slice(0,2) + ":" + temp.toString().slice(2,4) + "AM")
-            } } }
-        else {
-            setArrivalTime(temp.toString().slice(0,2) + ":" + temp.toString().slice(2,4) + "PM")
+        if(hours == 0) {
+            hours = 12;
         }
-        temp = 0;
+        let string = hours + ":";
+        if(minutes < 10) {
+            string += "0";
+        }
+        string += minutes + " " + ampm;
+        return string;
     }
-    )
 
     return (
         <div className='flight-info-box'>
             <div>
-                <div>{departureTime}-{arrivalTime}</div>
+                <div>{formatTime(props.leg.departureTime)} - {formatTime(props.leg.arrivalTime)}</div>
                 <div>{props.leg.duration}</div>
             </div>
             <div>

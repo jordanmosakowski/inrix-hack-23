@@ -24,6 +24,7 @@ function Main() {
     const jsmap = useRef(null);
     const [selectedFlight, setSelectedFlight] = useState(null);
     const [drivingOption, setDrivingOption] = useState(null);
+    const [transitOption, setTransitOption] = useState(null);
 
     const [selectingOutbound, setSelectingOutbound] = useState(true);
     const [flightOptions, setFlightOptions] = useState([]);
@@ -36,6 +37,8 @@ function Main() {
     const [endCoords, setEndCoords] = useState(null);
 
     const [selectedTransport, setSelectedTransport] = useState([]);
+
+    const [currentSelection, setCurrentSelection] = useState(0);
 
     useEffect(() => {
         let startAddrCoords = query.get("origin").split(',').map((coord) => parseFloat(coord));
@@ -69,74 +72,157 @@ function Main() {
         setEndIata(closestEndAirport.properties.iata_code);
     },[]);
 
-    const setFlight = (flight) => {
-        setSelectedFlight(flight);
+    const getTransportOptions = (flight, num) => {
+        let startDate, endDate, durationInMinutes;
+        if(num == 0) {
+            startDate = new Date(flight.legs[0].departureDateTime);
+            startDate.setHours(startDate.getHours() - 2);
+            endDate = new Date(flight.legs[1].arrivalDateTime);
+            endDate.setHours(endDate.getHours() + 1);
+            durationInMinutes = (endDate - startDate) / 1000 / 60;
+        }
+        else if(num == 1) {
+            startDate = new Date(flight.legs[0].arrivalDateTime);
+            startDate.setHours(startDate.getHours() + 1);
+        }
+        else if(num == 2) {
+            startDate = new Date(flight.legs[1].departureDateTime);
+            startDate.setHours(startDate.getHours() - 2);
+        }
+        else if(num == 3) {
+            startDate = new Date(flight.legs[1].arrivalDateTime);
+            startDate.setHours(startDate.getHours() + 1);
+        }
 
-        const startDate = new Date(flight.legs[0].departureDateTime);
-        console.log(flight.legs[0].departureDateTime);
-        startDate.setHours(startDate.getHours() - 2);
-        const endDate = new Date(flight.legs[1].arrivalDateTime);
-        startDate.setHours(startDate.getHours() + 2);
-        const durationInMinutes = (endDate - startDate) / 1000 / 60;
-        
+        let url = '';
+
+        if(num == 0) {
+            url = `https://routing.openstreetmap.de/routed-car/route/v1/driving/${startCoords[1]},${startCoords[0]};${originCoords[1]},${originCoords[0]}?overview=false&geometries=polyline&steps=true`;
+        }
+        else if(num == 1) {
+            url = `https://routing.openstreetmap.de/routed-car/route/v1/driving/${destinationCoords[1]},${destinationCoords[0]};${endCoords[1]},${endCoords[0]}?overview=false&geometries=polyline&steps=true`;
+        }
+        else if(num == 2) {
+            url = `https://routing.openstreetmap.de/routed-car/route/v1/driving/${endCoords[1]},${endCoords[0]};${destinationCoords[1]},${destinationCoords[0]}?overview=false&geometries=polyline&steps=true`;
+        }
+        else if(num == 3) {
+            url = `https://routing.openstreetmap.de/routed-car/route/v1/driving/${originCoords[1]},${originCoords[0]};${startCoords[1]},${startCoords[0]}?overview=false&geometries=polyline&steps=true`;
+        }
         // get driving route
-        fetch(`https://routing.openstreetmap.de/routed-car/route/v1/driving/${startCoords[1]},${startCoords[0]};${originCoords[1]},${originCoords[0]}?overview=false&geometries=polyline&steps=true`)
+        fetch(url)
         .then(response => response.json())
         .then(data => {
             const distance = data.routes[0].distance;
             const duration = data.routes[0].duration/60;
-            const leaveBy = new Date(new Date(flight.legs[0].departureDateTime.substring(0,19)).getTime() - 2*60000*60 - duration * 60000);
+            let time;
+            if(num == 0) {
+                time = new Date(new Date(flight.legs[0].departureDateTime.substring(0,19)).getTime() - 2*60000*60 - duration * 60000);
+            }
+            else if(num == 1) {
+                time = new Date(new Date(flight.legs[0].arrivalDateTime.substring(0,19)).getTime() + (duration + 30) * 60000);
+            }
+            else if(num == 2) {
+                time = new Date(new Date(flight.legs[1].departureDateTime.substring(0,19)).getTime() - 2*60000*60 - duration * 60000);
+            }
+            else if(num == 3) {
+                time = new Date(new Date(flight.legs[1].arrivalDateTime.substring(0,19)).getTime() + (duration + 30) * 60000);
+            }
             const points = data.routes[0].legs[0].steps.map((s) => s.maneuver.location);
             const linestring1 = turf.lineString(points, {name: 'Line'});
-            console.log(startDate, leaveBy);
             setDrivingOption({
+                name: "Driving",
                 distance,
                 duration,
-                leaveBy,
+                time,
                 linestring: linestring1,
-                parkingCost: "Loading"
+                cost: num == 0 ? "Loading" : null
             });
 
             // get parking
-            const url = `http://127.0.0.1:5000/parking?point=${originCoords[0]}%7C${originCoords[1]}&radius=1000&entry=${startDate.toISOString().substring(0,16).replace(":","%3A")+"Z"}&duration=${durationInMinutes}`
-            fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                // console.log(data);
-                const parking = data.result;
-                let parkingCost = parking.find((p) => p.calculatedRates?.length > 0) || null;
-                parkingCost = parkingCost ? (parkingCost.currency + parkingCost.calculatedRates[0].rateCost.toString()) : "Unknown";
-                setDrivingOption((prev) => ({
-                    ...prev,
-                    parkingCost
-                }));
-            });
+            if(num == 0) {
+                const url = `http://127.0.0.1:5000/parking?point=${originCoords[0]}%7C${originCoords[1]}&radius=1000&entry=${startDate.toISOString().substring(0,16).replace(":","%3A")+"Z"}&duration=${durationInMinutes}`
+                fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const parking = data.result;
+                    let parkingCost = parking.find((p) => p.calculatedRates?.length > 0) || null;
+                    parkingCost = parkingCost ? (parkingCost.currency + parkingCost.calculatedRates[0].rateCost.toString()) : "Unknown";
+                    setDrivingOption((prev) => ({
+                        ...prev,
+                        cost: parkingCost
+                    }));
+                });
+            }
+            else if(num == 0) {
+                // call rental car api
+            }
 
         });
 
-        fetch(`http://127.0.0.1:5000/transit?start=${startCoords[0]},${startCoords[1]}&end=${originCoords[0]},${originCoords[1]}&time=${startDate.toISOString()}`)
+        let transitUrl
+        if(num == 0) {
+            transitUrl = `http://127.0.0.1:5000/transit?start=${startCoords[0]},${startCoords[1]}&end=${originCoords[0]},${originCoords[1]}&time=${startDate.toISOString()}&isArrival=true`
+        }
+        else if (num == 1) {
+            transitUrl = `http://127.0.0.1:5000/transit?start=${destinationCoords[0]},${destinationCoords[1]}&end=${endCoords[0]},${endCoords[1]}&time=${startDate.toISOString()}&isArrival=false`
+        }
+        else if (num == 2) {
+            transitUrl = `http://127.0.0.1:5000/transit?start=${endCoords[0]},${endCoords[1]}&end=${destinationCoords[0]},${destinationCoords[1]}&time=${startDate.toISOString()}&isArrival=true`
+        }
+        else {
+            transitUrl = `http://127.0.0.1:5000/transit?start=${originCoords[0]},${originCoords[1]}&end=${startCoords[0]},${startCoords[1]}&time=${startDate.toISOString()}&isArrival=false`
+        }
+
+        fetch(transitUrl)
         .then(response => response.json())
         .then(data => {
-            console.log(data);
+            const route = data.routes[0];
+            let startTime = new Date(route.sections[0].departure.time);
+            let time = new Date(new Date(route.sections[0].departure.time.substring(0,19)).getTime());
+            let endTime = new Date(route.sections[route.sections.length-1].arrival.time);
+            let points = [];
+            route.sections.forEach((section) => {
+                points.push([section.departure.place.location.lng, section.departure.place.location.lat]);
+                points.push([section.arrival.place.location.lng, section.arrival.place.location.lat]);
+            });
+            const linestring2 = turf.lineString(points, {name: 'Transit'});
+            const distance = turf.length(linestring2, {units: 'meters'});
+            const duration = (endTime - startTime) / 1000 / 60;
+            setTransitOption({
+                name: "Public Transit",
+                distance,
+                duration,
+                time,
+                linestring: linestring2,
+                cost: "Unknown",
+            });
         });
     }
 
-    const handleClick = (selectedMode, selectedLeaveBy, selectedDuration, selectedCost) => {
-        jsmap.current.doTransition();
-        setSelectedTransport({
-            mode: selectedMode, 
-            leaveBy: selectedLeaveBy, 
-            duration: selectedDuration, 
-            cost: selectedCost
-        });
+    const setFlight = (flight) => {
+        setSelectedFlight(flight);
+        getTransportOptions(flight, 0);
+    }
+
+    const chooseTransport = (info) => {
+        setSelectedTransport((prev) => [...prev, info]);
+        if(currentSelection == 0 || currentSelection == 2) {
+            jsmap.current.doTransition();
+        }
+        if(currentSelection < 3) {
+            getTransportOptions(selectedFlight, currentSelection+1);
+            setCurrentSelection(currentSelection + 1);
+        }
+        setDrivingOption(null);
+        setTransitOption(null);
     }
 
     return (
         <div>
-            {originCoords && destinationCoords && startCoords && endCoords && <JetStreamMap route1LineStr={drivingOption?.linestring} origin={originCoords} des={destinationCoords} start={startCoords} end={endCoords} ref={jsmap} />}
+            {originCoords && destinationCoords && startCoords && endCoords && <JetStreamMap route1LineStr={drivingOption?.linestring} route2LineStr={transitOption?.linestring} origin={originCoords} des={destinationCoords} start={startCoords} end={endCoords} ref={jsmap} />}
             {!selectedFlight && <SelectFlight setFlight={setFlight} origin={startIata} destination={endIata}/>}
             {selectedFlight && <>
-                <SelectTransport driving={drivingOption} start={startCoords} end={originCoords} startTime={selectedFlight.legs[0].departureDateTime} endTime={selectedFlight.legs[1].arrivalDateTime} handleClick={handleClick} />
+                <SelectTransport leaveBy={currentSelection %2 == 0} location={(currentSelection == 0 || currentSelection == 3) ? startIata : endIata} to={currentSelection %2 == 0} driving={drivingOption} transit={transitOption} start={startCoords} end={originCoords} startTime={selectedFlight.legs[0].departureDateTime} endTime={selectedFlight.legs[1].arrivalDateTime} handleClick={chooseTransport} />
                 <TripItinerary flight={selectedFlight} origin={startIata} destination={endIata} transport={selectedTransport} />
             </>}
         </div>

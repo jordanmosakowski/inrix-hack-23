@@ -35,7 +35,7 @@ $text-strong: #333333;
   max-width: 600px;
   padding: 10px;
   display: grid;
-  grid-template-columns: 1fr 2fr 1fr 1fr;
+  grid-template-columns: 1.5fr 2fr 1fr 1fr;
   transition: all 0.1s ease-in-out;
   // center in the parent
   margin: 10px auto;
@@ -76,10 +76,12 @@ $text-strong: #333333;
   position: absolute;
   left: 3vh;
   top: 3vh;
-  bottom: 3vh;
+  // bottom: 3vh;
   border-radius: 10px;
+  padding-bottom: 30px;
   width: 25vw;
-  height: 300px;
+  max-height: 94vh;
+  overflow-y: scroll;
   background-color: white;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }

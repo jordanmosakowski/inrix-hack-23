@@ -3,11 +3,10 @@ import DeckGL, { GeoJsonLayer, IconLayer, ArcLayer, FlyToInterpolator } from 'de
 import { Map } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-
 const MAPBOX_ACCESS_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 const MAP_STYLE = "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json";
 
-const JetStreamMap = forwardRef(function JetStreamMap( { origin, des, start, end, PassItUp, route1LineStr}, ref ) {
+const JetStreamMap = forwardRef(function JetStreamMap( { origin, des, start, end, route1LineStr, route2LineStr}, ref ) {
 
   const [transitionFlag, setTransitionFlag] = useState(0);
   const [viewState, setViewState] = useState({
@@ -58,7 +57,7 @@ const JetStreamMap = forwardRef(function JetStreamMap( { origin, des, start, end
         zoom: 2.5,
         pitch: 30,
         bearing: 0,
-        transitionDuration: '5000',
+        transitionDuration: '3000',
         transitionInterpolator: new FlyToInterpolator(),
         onTransitionEnd: resolve
       });
@@ -72,7 +71,7 @@ const JetStreamMap = forwardRef(function JetStreamMap( { origin, des, start, end
       zoom: 10,
       pitch: 30,
       bearing: 0,
-      transitionDuration: '5000',
+      transitionDuration: '3000',
       transitionInterpolator: new FlyToInterpolator(),
     });
   };
@@ -128,7 +127,7 @@ const JetStreamMap = forwardRef(function JetStreamMap( { origin, des, start, end
         viewState={viewState}
         onViewStateChange={({ viewState }) => setViewState(viewState)}
         controller={true}
-        layers={route1LineStr ? [...layers, 
+        layers={(route1LineStr && route2LineStr) ? [...layers, 
           new GeoJsonLayer({
             id: "driving",
             data: route1LineStr,
@@ -140,7 +139,19 @@ const JetStreamMap = forwardRef(function JetStreamMap( { origin, des, start, end
             },
             getLineColor: () => [0, 0, 0, 255],
             getLineWidth: () => 100,
-          })] : layers}
+          }),
+          new GeoJsonLayer({
+            id: "transit",
+            data: route2LineStr,
+            stroked: false,
+            filled: false,
+            lineWidthMinPixels: 0.5,
+            parameters: {
+              depthTest: false
+            },
+            getLineColor: () => [0, 0, 175, 255],
+            getLineWidth: () => 100,
+          }),] : layers}
       >
         <Map
           mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
