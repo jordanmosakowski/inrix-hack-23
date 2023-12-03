@@ -26,6 +26,20 @@ $text-strong: #333333;
 
 }
 
+.flight-info-box {
+  max-width: 600px;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 1fr;
+  transition: all 0.1s ease-in-out;
+  // center in the parent
+  margin: 10px auto;
+}
+.flight-info-box:hover {
+  background-color: #e7e7e7;
+
+}
+
 .SelectFlight {
   padding: 10px;
   position: absolute;
@@ -36,6 +50,7 @@ $text-strong: #333333;
   z-index: 2;
   background-color: white;
   border-radius: 15px;
+  overflow-y: scroll;
 }
 
 .SelectTransport {

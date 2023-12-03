@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import './App.scss';
 import { DebounceInput } from 'react-debounce-input'
-
-import airportData from './airports.json';
+import { useNavigate } from "react-router-dom";
 
 function Welcome() {
+    const navigate = useNavigate();
+
     const [startAddr, setStartAddr] = useState("");
     const [startAddrOptions, setStartAddrOptions] = useState([]);
     const [startAddrCoords, setStartAddrCoords] = useState([]);
@@ -100,29 +101,7 @@ function Welcome() {
                     alert("Start date must be before end date");
                     return;
                 }
-                let closestStartAirport = null;
-                let closestStartAirportDistance = null;
-                airportData.features.forEach((airport) => {
-                    let distance = Math.sqrt(Math.pow(airport.geometry.coordinates[1] - startAddrCoords[0], 2) + Math.pow(airport.geometry.coordinates[0] - startAddrCoords[1], 2));
-                    if (closestStartAirportDistance == null || distance < closestStartAirportDistance) {
-                        closestStartAirport = airport;
-                        closestStartAirportDistance = distance;
-                    }
-                })
-
-                //find closest airport to end
-                let closestEndAirport = null;
-                let closestEndAirportDistance = null;
-                airportData.features.forEach((airport) => {
-                    let distance = Math.sqrt(Math.pow(airport.geometry.coordinates[1] - endAddrCoords[0], 2) + Math.pow(airport.geometry.coordinates[0] - endAddrCoords[1], 2));
-                    if (closestEndAirportDistance == null || distance < closestEndAirportDistance) {
-                        closestEndAirport = airport;
-                        closestEndAirportDistance = distance;
-                    }
-                })
-
-                console.log("Start:",closestStartAirport.properties.iata_code, startAddrCoords);
-                console.log("End:",closestEndAirport.properties.iata_code, endAddrCoords);
+                navigate(`/map?origin=${startAddrCoords[0]},${startAddrCoords[1]}&destination=${endAddrCoords[0]},${endAddrCoords[1]}&startDate=${startDate}&endDate=${endDate}`);
             }}>Submit</button>
         </div>
     )
